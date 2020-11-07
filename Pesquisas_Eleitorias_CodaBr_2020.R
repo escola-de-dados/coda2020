@@ -1,17 +1,19 @@
+# Script baseado no workshop de Juliana Marques no Coda.Br 2020, a quinta Confer√™ncia de Jornalismo de Dados e M√©todos Digitais
+
 #Alguns Atalhos
 
 #CTRL+ENTER: roda a linha selecionada no script. O atalho mais utilizado.
-#ALT+-: (<-) sinal de atribuiÁ„o.
+#ALT+-: (<-) sinal de atribui√ß√£o.
 #CTRL+SHIFT+M: (%>%) operador pipe.
 #CTRL+1: altera cursor para o script.
 #CTRL+2: altera cursor para o console.
-#ALT+SHIFT+K: janela com todos os atalhos disponÌveis.
+#ALT+SHIFT+K: janela com todos os atalhos dispon√≠veis.
 
 
-install.packages("dplyr") # Pacote de manipulaÁ„o de dados
+install.packages("dplyr") # Pacote de manipula√ß√£o de dados
 install.packages("tidyverse") # 
-install.packages("agricolae") # correlaÁ„o
-install.packages("ggplot2") #gr·ficos dispers„o
+install.packages("agricolae") # correla√ß√£o
+install.packages("ggplot2") #gr√°ficos dispers√£o
 install.packages("qcc")  #Graf. Pareto
 
 library(dplyr)
@@ -20,13 +22,13 @@ library(agricolae)
 library(ggplot2)
 library(qcc)
 
-# Criando diretÛrio de trabalho
+# Criando diret√≥rio de trabalho
 
 dir.create("C:/Users/Data 5/Desktop/CodaBr/Arquivos",recursive=T)
 setwd("C:/Users/Data 5/Desktop/CodaBr/Arquivos")
 
 
-# lendo e tratando os dados de repositÛtio 
+# lendo e tratando os dados de reposit√≥tio 
 # baixando arquivo da internet:
 
 
@@ -46,7 +48,7 @@ unzip(zipfile="pesquisa_eleitoral_2020.zip",exdir = getwd())
 Base_pesquisa_eleitoral<-read.csv2("pesquisa_eleitoral_2020_BRASIL.csv",header = T)
 
 
-## nomes das vari·veis
+## nomes das vari√°veis
 names(Base_pesquisa_eleitoral)
 
 View(head(Base_pesquisa_eleitoral,10)) # Visualizando as primeiras 10 obs.
@@ -64,19 +66,19 @@ Base_pesquisa_eleitoral$VR_PESQUISA <- as.numeric(gsub (",",".",Base_pesquisa_el
 #data de inicio da primeira pesquisa
 min((Base_pesquisa_eleitoral[,"DT_INICIO_PESQUISA"]))
 
-#data de inicio da ˙ltima pesquisa
+#data de inicio da √∫ltima pesquisa
 max((Base_pesquisa_eleitoral[,"DT_INICIO_PESQUISA"]))
 
 
-table(Base_pesquisa_eleitoral$DS_CARGOS) # FrequÍncia por cargo
+table(Base_pesquisa_eleitoral$DS_CARGOS) # Frequ√™ncia por cargo
 
 prop.table(table(Base_pesquisa_eleitoral$DS_CARGOS)) #  percentual
 
-table(Base_pesquisa_eleitoral$DS_ORIGEM_RECURSO) # FrequÍncia Origem Recursos
+table(Base_pesquisa_eleitoral$DS_ORIGEM_RECURSO) # Frequ√™ncia Origem Recursos
 
 prop.table(table(Base_pesquisa_eleitoral$DS_ORIGEM_RECURSO)) # percentual
 
-#Qtd de Empresas distintas envolvidas por MunicÌpio
+#Qtd de Empresas distintas envolvidas por Munic√≠pio
 
 Qtd_Empresas <- Base_pesquisa_eleitoral %>% 
   group_by(NM_UE,SG_UE,SG_UF) %>% 
@@ -84,15 +86,15 @@ Qtd_Empresas <- Base_pesquisa_eleitoral %>%
 
 View(Qtd_Empresas)
 
-#Ver Gr·fico Histograma
+#Ver Gr√°fico Histograma
 
 G_hist<-hist(Qtd_Empresas$QTD,  
-     main = "Qtd. de Empresas distintas envolvidas em pesquisa por municÌpio", 
+     main = "Qtd. de Empresas distintas envolvidas em pesquisa por munic√≠pio", 
      xlab = "Qtd. de Empresas", ylab = "Freq. Absoluta", 
      col = c("blue"), 
      labels = TRUE)
 
-#Ver Gr·fico Pareto
+#Ver Gr√°fico Pareto
 Pareto <- table(Qtd_Empresas$QTD)
 G_Pareto <- pareto.chart(Pareto)
 
@@ -106,24 +108,24 @@ TAB_MUN_COM_3EM<-prop.table(table(MUN_COM_3EM$SG_UF))*100
 
 
 #Box-Plot
-#Existe diferenÁa no Valor da Pesquisa paga com origem de recursos distintas?
-#Selecionando mesmo municÌpio e cargo
+#Existe diferen√ßa no Valor da Pesquisa paga com origem de recursos distintas?
+#Selecionando mesmo munic√≠pio e cargo
 
 #Box-Plot Valor Pesquisa
 Base_pesquisa_eleitoral %>%
-    filter(DS_CARGOS=="Prefeito",NM_UE=="S√O PAULO") %>%
+    filter(DS_CARGOS=="Prefeito",NM_UE=="S√ÉO PAULO") %>%
     ggplot(aes(reorder(DS_ORIGEM_RECURSO,VR_PESQUISA),VR_PESQUISA))+
     geom_boxplot()
 
 #Box-Plot Qtd Entrevistados
 Base_pesquisa_eleitoral %>%
-  filter(DS_CARGOS=="Prefeito",NM_UE=="S√O PAULO") %>%
+  filter(DS_CARGOS=="Prefeito",NM_UE=="S√ÉO PAULO") %>%
   ggplot(aes(reorder(DS_ORIGEM_RECURSO,QT_ENTREVISTADOS),QT_ENTREVISTADOS))+
   geom_boxplot()
   
-#Filtra Origem de Recursos Fundo Partid·rio
+#Filtra Origem de Recursos Fundo Partid√°rio
 Fundo_Pardidario <- Base_pesquisa_eleitoral %>%
-  filter(DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Fundo Partid·rio")
+  filter(DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Fundo Partid√°rio")
 
 View(head(Fundo_Pardidario,10)) # Visualizando as primeiras 10 obs.
 
@@ -143,49 +145,49 @@ Base_pesquisa_eleitoral %>%
 
 #Box-Plot Comparando Cidades
 Base_pesquisa_eleitoral %>%
-  filter(DS_CARGOS=="Prefeito",NM_UE %in% c("RIO DE JANEIRO","S√O PAULO")) %>%
+  filter(DS_CARGOS=="Prefeito",NM_UE %in% c("RIO DE JANEIRO","S√ÉO PAULO")) %>%
   ggplot(aes(reorder(NM_UE,VR_PESQUISA),VR_PESQUISA, fill=NM_UE))+
   geom_boxplot()
 
 
 #Outra possibilidade de leitura dos valores 
 RP<-(Base_pesquisa_eleitoral %>% 
-          filter(NM_UE=="RIO BRANCO",DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Recursos PrÛprios"))
+          filter(NM_UE=="RIO BRANCO",DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Recursos Pr√≥prios"))
 
 Nulo<-(Base_pesquisa_eleitoral %>% 
                       filter(NM_UE=="RIO BRANCO",DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="#NULO#"))
 
 FP<-(Base_pesquisa_eleitoral %>% 
-         filter(NM_UE=="RIO BRANCO",DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Fundo Partid·rio"))
+         filter(NM_UE=="RIO BRANCO",DS_CARGOS=="Prefeito",DS_ORIGEM_RECURSO=="Fundo Partid√°rio"))
 
 summary(RP$VR_PESQUISA)
 summary(Nulo$VR_PESQUISA)
 summary(FP$VR_PESQUISA)
   }        
 
-#RelaÁ„o entre Valor Pesquisa e Qtd de Entrevistados
+#Rela√ß√£o entre Valor Pesquisa e Qtd de Entrevistados
 
 Base_pesquisa_eleitoral %>% 
-  filter(NM_UE=="S√O PAULO",DS_CARGOS=="Prefeito")%>%
+  filter(NM_UE=="S√ÉO PAULO",DS_CARGOS=="Prefeito")%>%
   ggplot(aes(QT_ENTREVISTADOS,VR_PESQUISA)) + 
   geom_point()
 
-#RelaÁ„o entre Valor Pesquisa e Qtd de Entrevistados / correlaÁ„o
-#funÁ„o j· existente no R
+#Rela√ß√£o entre Valor Pesquisa e Qtd de Entrevistados / correla√ß√£o
+#fun√ß√£o j√° existente no R
 cor(Base_pesquisa_SP$VR_PESQUISA,Base_pesquisa_SP$QT_ENTREVISTADOS, method = "spearman")
 
 #agricolare adicional p valor (significancia)
 #quanto maior qtd de entrevistados mais barata a pesquisa
 correlation(Base_pesquisa_SP$QT_ENTREVISTADOS,Base_pesquisa_SP$VR_PESQUISA)
 
-#p valor maior que 0,05 n„o significativo
+#p valor maior que 0,05 n√£o significativo
 
-#Valor Pesquisa È dependente da Qtd de entrevistados / regress„o 
+#Valor Pesquisa √© dependente da Qtd de entrevistados / regress√£o 
 lm1= lm(VR_PESQUISA ~ QT_ENTREVISTADOS,  data=Base_pesquisa_SP)
 summary(lm1)
 
 #Bo Intercept 
-#B1 angulaÁ„o da reta
+#B1 angula√ß√£o da reta
 
 
 
